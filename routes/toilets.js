@@ -132,6 +132,34 @@ router.post("/toilets/:id/reviews", async (req, res) => {
   }
 });
 
+router.delete("/toilets/:toiletId/reviews/:reviewId", async (req, res) => {
+  try {
+    const toilet = await Toilet.findByPk(req.params.toiletId, {
+      include: Review,
+    });
+
+    if (!toilet) {
+      return res.status(404).send("Toilet not found");
+    }
+
+    const review = await Review.findByPk(req.params.reviewId);
+
+    if (!review || review.toiletId !== toilet.id) {
+      return res.status(404).send("Review not found");
+    }
+
+    await review.destroy();
+
+    // Reload toilet data after the review is deleted
+    await toilet.reload({ include: Review });
+
+    res.json(toilet);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 /**
  * @swagger
  * /toilets/{id}/reviews:
