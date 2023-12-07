@@ -8,7 +8,19 @@ Toilet.init(
   {
     name: DataTypes.STRING,
     address: DataTypes.STRING,
-    tags: DataTypes.STRING,
+    tags: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      get() {
+        // Parse the stored string into an array when fetching from the database
+        const rawValue = this.getDataValue("tags");
+        return rawValue ? rawValue.split(",") : [];
+      },
+      set(value) {
+        // Join the array into a string for storage in the database
+        this.setDataValue("tags", value.join(","));
+      },
+    },
     description: DataTypes.STRING,
     coords: DataTypes.JSON,
     images: DataTypes.STRING,

@@ -1,9 +1,10 @@
 // db.js
 const { Sequelize } = require("sequelize");
+const config = require("./config/config.json");
 
 const sequelize = new Sequelize({
-  dialect: "sqlite",
-  storage: "./database.sqlite",
+  dialect: "sqlite", // Specify SQLite as the database dialect
+  storage: config.development.storage, // Use the storage path from your config file
 });
 
 sequelize
